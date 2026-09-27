@@ -1,0 +1,25 @@
+name: Send Job Matches
+
+on:
+  schedule:
+    - cron: "0 9 * * *"   # daily at 9:00 UTC
+  workflow_dispatch:
+
+jobs:
+  send-matches:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Send job matches
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python emailer.py
