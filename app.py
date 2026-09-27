@@ -2,8 +2,17 @@ from fastapi import FastAPI, UploadFile, File, Form
 from resume_parser import extract_resume_text,parse_resume
 from profiles import create_or_update_profile
 from db import supabase
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.post("/upload-resume")
 def upload_resume(
     email: str = Form(...),
