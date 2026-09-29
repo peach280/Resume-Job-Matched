@@ -97,7 +97,6 @@ def fetch_public_job_listings(keyword: str, location: str):
             )
 
             cutoff_date = datetime.now(timezone.utc).date() - timedelta(days=5)
-            print(cutoff_date)
             try:
                 posted_date = datetime.strptime(posted_date_string, "%Y-%m-%d").date()
 

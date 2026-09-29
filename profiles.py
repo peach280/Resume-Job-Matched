@@ -2,7 +2,7 @@ from db import supabase
 from embeddings import generate_embedding
 
 def get_users():
-    response=supabase.table("users").select("id","email").execute()
+    response=supabase.table("users").select("id,email").execute()
     return response.data
 def create_profile_text(
     resume_text: str,
@@ -32,7 +32,8 @@ def create_or_update_profile(
     email: str,
     resume_text: str,
     skills: list[str],
-    preferred_roles: list[str]
+    preferred_roles: list[str],
+    experience_level:str
 ):
     """
     Creates or updates a user's profile and generates
@@ -59,7 +60,8 @@ def create_or_update_profile(
         .upsert(
             {
                 "email": email,
-                "profile_embedding": profile_embedding
+                "profile_embedding": profile_embedding,
+                "experience_level":experience_level
             },
             on_conflict="email"
         )

@@ -16,5 +16,6 @@ def parse_resume(raw_text):
         return {
             "profile_text": raw_text,
             "skills":[],
-            "preferred_roles":[]
+            "preferred_roles":[],
+            "experience_level":"fresher"
         }

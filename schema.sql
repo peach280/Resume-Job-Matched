@@ -53,6 +53,7 @@ create table if not exists public.users (
         default timezone('utc'::text, now())
         not null
 );
+alter table public.users add column if not exists experience_level text;
 create table if not exists public.user_jobs_delivered (
     user_id bigint REFERENCES users(id),
     job_id bigint REFERENCES jobs(id),

@@ -15,8 +15,7 @@ Resume text:
 
 First, internally assess whether this candidate is a "fresher" (little to no
 professional work experience, likely a recent graduate) or "experienced"
-(has meaningful professional work experience). Do not include this
-assessment in your output — use it only to decide how to write the summary:
+(has meaningful professional work experience). 
 - If fresher: emphasize projects, education, and relevant coursework in the summary.
 - If experienced: emphasize professional work experience and achievements in the summary.
 
@@ -25,8 +24,9 @@ Return a JSON object with exactly these keys:
   as described above (string)
 - "skills": list of technical skills mentioned (list of strings)
 - "preferred_roles": likely job titles this person fits, based on their background (list of strings)
+- "experience_level" : fresher or experienced
 
-Return only the JSON object, no other text. Do not include an experience_level key.
+Return only the JSON object, no other text. 
 """
     try:
         response = client.chat.completions.create(

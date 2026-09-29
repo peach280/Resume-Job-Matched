@@ -1,3 +1,7 @@
+import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from db import supabase
 from profiles import get_users
 from matching import get_user_matching_jobs
@@ -5,8 +9,7 @@ from matching import get_user_matching_jobs
 
 def filter_already_sent_jobs(user_id, jobs):
     sent_jobs = (
-        supabase
-        .table("user_jobs_delivered")
+        supabase.table("user_jobs_delivered")
         .select("job_id")
         .eq("user_id", user_id)
         .execute()
@@ -16,28 +19,41 @@ def filter_already_sent_jobs(user_id, jobs):
     return filtered_jobs
 
 
-def send_job_email(email: str, jobs: list):
-    """
-    Placeholder for the email service.
-    We will connect this to an actual email provider
-    after the matching pipeline is verified.
-    """
-    print(f"\nPreparing email for {email}...")
+def get_smtp_connection():
+    email_address = os.environ.get("EMAIL_ADDRESS")
+    email_password = os.environ.get("EMAIL_APP_PASSWORD")
 
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
+    server.login(email_address, email_password)
+    return server
+
+
+def send_job_email(smtp_server, email: str, jobs: list):
     if not jobs:
-        print("No matching jobs found.")
+        print(f"No matching jobs for {email}, skipping.")
         return
 
-    print(f"Found {len(jobs)} matching jobs:")
+    sender = os.environ.get("EMAIL_ADDRESS")
 
+    body_lines = []
     for job in jobs:
-        print(
-            f"\n{job['title']}"
-            f"\nCompany: {job['company']}"
-            f"\nLocation: {job['location']}"
-            f"\nSimilarity: {job['similarity']:.3f}"
-            f"\nApply: {job['application_url']}"
+        body_lines.append(
+            f"{job['title']}\n"
+            f"Company: {job['company']}\n"
+            f"Location: {job['location']}\n"
+            f"Apply: {job['application_url']}\n"
         )
+    body = "\n\n".join(body_lines)
+
+    msg = MIMEMultipart()
+    msg["From"] = sender
+    msg["To"] = email
+    msg["Subject"] = f"{len(jobs)} new job matches for you"
+    msg.attach(MIMEText(body, "plain"))
+
+    smtp_server.sendmail(sender, email, msg.as_string())
+    print(f"Email sent to {email} with {len(jobs)} jobs.")
 
 
 def record_delivery(user_id, job_ids):
@@ -47,22 +63,25 @@ def record_delivery(user_id, job_ids):
 
 def run_send_matches():
     users = get_users()
-    for user in users:
-        user_id = user["id"]
-        email = user["email"]
+    smtp_server = get_smtp_connection()
 
-        matched_jobs = get_user_matching_jobs(
-            email=email,
-            match_threshold=0.5,
-            match_count=10
-        )
-
-        new_jobs = filter_already_sent_jobs(user_id, matched_jobs)
-
-        if new_jobs:
-            send_job_email(email=email, jobs=new_jobs)
-            job_ids = [job["id"] for job in new_jobs]
-            record_delivery(user_id, job_ids)
+    try:
+        for user in users:
+            user_id = user["id"]
+            email = user["email"]
+            print(email)
+            matched_jobs = get_user_matching_jobs(
+                email=email, match_threshold=0.5, match_count=10
+            )
+            print(matched_jobs)
+            new_jobs = filter_already_sent_jobs(user_id, matched_jobs)
+            print("new_jobs:", new_jobs)
+            if new_jobs:
+                send_job_email(smtp_server, email, new_jobs)
+                job_ids = [job["id"] for job in new_jobs]
+                record_delivery(user_id, job_ids)
+    finally:
+        smtp_server.quit()
 
 
 if __name__ == "__main__":

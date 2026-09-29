@@ -25,7 +25,8 @@ def upload_resume(
         email=email,
         resume_text=profile_data["profile_text"],
         skills=profile_data["skills"],
-        preferred_roles=profile_data["preferred_roles"]
+        preferred_roles=profile_data["preferred_roles"],
+        experience_level=profile_data["experience_level"]
     )
     print(f"Received file: {file.filename}, email: {email}")
     return {"status": "received", "filename": file.filename}
