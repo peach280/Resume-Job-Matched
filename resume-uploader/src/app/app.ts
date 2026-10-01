@@ -8,16 +8,16 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [FormsModule, CommonModule],
   template: `
-    <div style="max-width: 400px; margin: 40px auto; font-family: sans-serif;">
-      <h2>Upload your resume</h2>
-      <form (submit)="onSubmit($event)">
-        <input type="email" [(ngModel)]="email" name="email" placeholder="Your email" required /><br /><br />
-        <input type="file" (change)="onFileSelected($event)" accept=".pdf" required /><br /><br />
-        <button type="submit">Upload</button>
-      </form>
-      <p>{{ status() }}</p>
-    </div>
-  `
+  <main class="container">
+    <h2>Upload your resume</h2>
+    <form (submit)="onSubmit($event)">
+      <input type="email" [(ngModel)]="email" name="email" placeholder="Your email" required />
+      <input type="file" (change)="onFileSelected($event)" accept=".pdf" required />
+      <button type="submit">Upload</button>
+    </form>
+    <p>{{ status() }}</p>
+  </main>
+`
 })
 export class App {
   email = '';

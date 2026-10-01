@@ -69,13 +69,18 @@ def run_send_matches():
         for user in users:
             user_id = user["id"]
             email = user["email"]
-            print(email)
-            matched_jobs = get_user_matching_jobs(
-                email=email, match_threshold=0.5, match_count=10
-            )
-            print(matched_jobs)
+
+            try:
+                matched_jobs = get_user_matching_jobs(
+                    email=email, match_threshold=0.4, match_count=10
+                )
+
+            except Exception as e:
+                print(f"Failed to get matches for {email}: {e}")
+                continue
+
             new_jobs = filter_already_sent_jobs(user_id, matched_jobs)
-            print("new_jobs:", new_jobs)
+
             if new_jobs:
                 send_job_email(smtp_server, email, new_jobs)
                 job_ids = [job["id"] for job in new_jobs]

@@ -1,11 +1,13 @@
 import os
-from groq import Groq,APIError
+from groq import Groq, APIError
 from dotenv import load_dotenv
 import json
 
 load_dotenv()
 
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
+
 def extract_structured_profile(resume_text):
     """Extract structured info from resume_text organized into different sections based on user's experience"""
     prompt = f"""Extract structured information from the resume below.
@@ -16,6 +18,11 @@ Resume text:
 First, internally assess whether this candidate is a "fresher" (little to no
 professional work experience, likely a recent graduate) or "experienced"
 (has meaningful professional work experience). 
+Classify as "fresher" if the candidate has less than 1 year of full-time
+professional work experience, is currently pursuing or has just completed
+their degree, or is in an internship role. Classify as "experienced" only
+if they have 1+ years of full-time professional work experience after
+completing their degree.
 - If fresher: emphasize projects, education, and relevant coursework in the summary.
 - If experienced: emphasize professional work experience and achievements in the summary.
 
@@ -31,10 +38,8 @@ Return only the JSON object, no other text.
     try:
         response = client.chat.completions.create(
             model="openai/gpt-oss-120b",
-            messages=[
-                {"role": "user", "content": prompt}
-            ],
-            response_format={"type": "json_object"}
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
         )
         raw_output = response.choices[0].message.content
         parsed = json.loads(raw_output)
@@ -42,5 +47,3 @@ Return only the JSON object, no other text.
     except (APIError, json.JSONDecodeError) as e:
         print(f"LLM extraction failed: {e}")
         return None
-        
-    
