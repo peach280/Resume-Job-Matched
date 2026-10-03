@@ -1,3 +1,3 @@
 export const environment = {
-  apiUrl: 'https://your-deployed-backend-url.com'
+  apiUrl: 'https://resume-job-matched.onrender.com'
 };

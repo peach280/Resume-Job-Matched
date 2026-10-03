@@ -8,11 +8,13 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
+    allow_origins=["resume-job-matched-5yx0yf6y0.vercel.app"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 @app.post("/upload-resume")
 def upload_resume(
     email: str = Form(...),
