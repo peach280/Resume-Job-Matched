@@ -1,6 +1,6 @@
 # Resume → Job Matches
 
-A $0, end-to-end pipeline that reads your resume, understands it, and emails you relevant software engineering roles — automatically, every day.
+A $0, end-to-end pipeline that reads your resume, understands it, and emails you relevant software engineering roles automatically, every day.
 
 **Live app:** https://resume-job-matched.vercel.app
 
